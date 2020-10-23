@@ -56,6 +56,14 @@
         }, function(args) {
         }, 'WebIntent', 'onNewIntent', []);
     };
+    
+    WebIntent.prototype.getExtrasJSON = function(success, fail) {
+        return cordova.exec(function(args) {
+            success(args);
+        }, function(args) {
+            fail(args);
+        }, 'WebIntent', 'getExtrasJSON', []);
+    };
 
     WebIntent.prototype.sendBroadcast = function(params, success, fail) {
         return cordova.exec(function(args) {
