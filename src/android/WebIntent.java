@@ -1,5 +1,7 @@
 package com.borismus.webintent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 
@@ -92,6 +95,37 @@ public class WebIntent extends CordovaPlugin {
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
                     return false;
                 }
+            } else if (action.equals("getExtrasJSON")) {
+                if (args.length() != 0) {
+                    //return new PluginResult(PluginResult.Status.INVALID_ACTION);
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.INVALID_ACTION));
+                    return false;
+                }
+                Intent i = ((CordovaActivity)this.cordova.getActivity()).getIntent();
+                JSONObject json = new JSONObject();
+                Bundle bundle = i.getExtras();
+                for (String key : bundle.keySet()) {
+                    Object value = bundle.get(key);
+                    if(value.getClass().getName() == String[].class.getName())
+                    {
+                        ArrayList<String> array = new ArrayList<String>(Arrays.<String>asList((String[]) value));
+                        try {
+                            json.put(key, array);
+                        } catch (JSONException e) {
+                        	callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
+                            return false;
+                        }
+                    }
+                    else {
+                        try {
+                            json.put(key, value);
+                        } catch (JSONException e) {
+                        	callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
+                            return false;
+                        }
+                    }
+                }
+				callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, json.toString() ));
             } else if ("getUri".equals(action)) {
                 if (args.length() != 0) {
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.INVALID_ACTION));
